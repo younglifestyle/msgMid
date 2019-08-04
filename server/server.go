@@ -1,16 +1,15 @@
 package server
 
 import (
-	"fmt"
-	log "github.com/Sirupsen/logrus"
-	"github.com/gin-gonic/gin"
-	"github.com/go-resty/resty"
 	"goexamples/kafka/msgMiddleware/kafka"
 	"goexamples/kafka/msgMiddleware/model"
 	"net/http"
 	"runtime"
 	"strconv"
 	"time"
+
+	log "github.com/Sirupsen/logrus"
+	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
@@ -121,17 +120,17 @@ func (h *Handler) workProduceMsg() {
 	}
 }
 
-func (h *Handler) CheckRun(addr string) bool {
-	resp, err := resty.R().
-		Get(fmt.Sprintf("%s/health", addr))
-	if err != nil {
-		return false
-	}
-	defer resp.RawBody().Close()
-
-	if resp.StatusCode() != http.StatusOK {
-		return false
-	}
-
-	return true
-}
+//func (h *Handler) CheckRun(addr string) bool {
+//	resp, err := resty.R().
+//		Get(fmt.Sprintf("%s/health", addr))
+//	if err != nil {
+//		return false
+//	}
+//	defer resp.RawBody().Close()
+//
+//	if resp.StatusCode() != http.StatusOK {
+//		return false
+//	}
+//
+//	return true
+//}

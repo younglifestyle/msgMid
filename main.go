@@ -1,10 +1,12 @@
 package main
 
 import (
-	log "github.com/Sirupsen/logrus"
+	"fmt"
 	"goexamples/kafka/msgMiddleware/kafka"
 	"goexamples/kafka/msgMiddleware/model"
 	"goexamples/kafka/msgMiddleware/server"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 var (
@@ -13,6 +15,8 @@ var (
 		KafkaTopics: []model.TopicInfo{
 			{Name: "tes2", Partitions: 5},
 		},
+		KafkaConsumerGroupId: "test-consumer-group",
+
 		HttpServerPort:               8090,
 		HttpServerReadTimeout:        5000,
 		HttpServerWriteTimeout:       5000,
@@ -24,9 +28,18 @@ func main() {
 
 	log.SetLevel(log.DebugLevel)
 
+	fmt.Println("start producer... ")
 	producer, err := kafka.CreateProducer(cfg)
 	if err != nil {
 		log.Error("create produce error :", err)
+		return
+	}
+
+	fmt.Println("start Consumer... ")
+	consumption := kafka.NewConsumption(cfg)
+	err = consumption.CreateConsume()
+	if err != nil {
+		log.Error("consumption error :", err)
 		return
 	}
 

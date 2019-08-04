@@ -20,6 +20,8 @@ type Config struct {
 	KafkaServer string      `json:"kafka_server"`
 	KafkaTopics []TopicInfo `json:"kafka_topics"` // topic信息
 
+	KafkaConsumerGroupId string `json:"kafka_consumer_group_id"`
+
 	// HTTP服务配置
 	HttpServerPort               int `json:"http_server_port"`
 	HttpServerReadTimeout        int `json:"http_server_read_timeout"`

@@ -13,10 +13,9 @@ func TestRunHttpServer(t *testing.T) {
 	}
 	fmt.Println()
 
-	u2 := [8]bool{0:true}
+	u2 := [8]bool{0: true}
 	for _, value := range u2 {
 		fmt.Println(value)
 	}
-
 
 }
