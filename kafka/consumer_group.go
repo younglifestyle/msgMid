@@ -1,6 +1,7 @@
 package kafka
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -11,7 +12,7 @@ import (
 )
 
 type ConsumptionMember struct {
-	Ready    chan bool
+	//Ready    chan bool
 	Messages chan *sarama.ConsumerMessage
 	Errs     chan error
 	Close    chan bool
@@ -31,7 +32,7 @@ func NewConsumptionMember(groupID string, topics []string, offset int64, name st
 		return nil
 	}
 
-	readyChan := make(chan bool)
+	//readyChan := make(chan bool)
 	messagesChan := make(chan *sarama.ConsumerMessage)
 	errsChan := make(chan error)
 	closeChan := make(chan bool)
@@ -40,7 +41,7 @@ func NewConsumptionMember(groupID string, topics []string, offset int64, name st
 		Close:    closeChan,
 		Errs:     errsChan,
 		Messages: messagesChan,
-		Ready:    readyChan,
+		//Ready:    readyChan,
 		Name:     name,
 		Number:   number,
 	}
@@ -70,7 +71,7 @@ func NewConsumptionMember(groupID string, topics []string, offset int64, name st
 }
 
 func (cm *ConsumptionMember) Setup(session sarama.ConsumerGroupSession) error {
-	close(cm.Ready)
+	//close(cm.Ready)
 	log.Printf("%s consumer member no = %d ready...", cm.Name, cm.Number)
 	return nil
 }
@@ -87,4 +88,18 @@ func (cm *ConsumptionMember) ConsumeClaim(session sarama.ConsumerGroupSession, c
 	}
 
 	return nil
+}
+
+// 可以设置并发参数，多go几个协程加速消费
+func (cm *ConsumptionMember) Start() {
+
+	for {
+		select {
+		case msg := <-cm.Messages:
+			// get message
+				fmt.Println(msg.Topic)
+		case errs := <-cm.Errs:
+			fmt.Println(errs)
+		}
+	}
 }
