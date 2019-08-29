@@ -75,8 +75,8 @@ func (c *consumer) close() error {
 
 func (c *consumer) start() {
 	defer c.wg.Done()
-	//var err error
-	//var value []byte
+
+end_circle:
 	for {
 		select {
 		case msg := <-c.consumer.Messages():
@@ -84,7 +84,7 @@ func (c *consumer) start() {
 			log.Println(msg.Topic, string(msg.Value))
 		case <-c.closeCh:
 			log.Println("consumer close...")
-			return
+			break end_circle
 		}
 	}
 }

@@ -62,7 +62,7 @@ func handleSendMsg(c *gin.Context, h *Handler) {
 	case h.msgChan <- &msg:
 		c.JSON(http.StatusOK, "send success...")
 	default:
-		c.JSON(http.StatusOK, "send success...")
+		c.JSON(http.StatusOK, "default...")
 	}
 }
 

@@ -13,7 +13,9 @@ var (
 	cfg = &model.Config{
 		KafkaServer: "172.16.9.229:9029",
 		KafkaTopics: []model.TopicInfo{
-			{Name: "tes2", Partitions: 5},
+			{Name: "tes2", Partitions: 1},
+			{Name: "tes2", Partitions: 2},
+			{Name: "tes2", Partitions: 3},
 		},
 		KafkaConsumerGroupId: "test-consumer-group",
 
