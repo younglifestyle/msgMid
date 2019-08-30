@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/Shopify/sarama"
 	"goexamples/kafka/msgMiddleware/kafka"
 	"goexamples/kafka/msgMiddleware/model"
 	"goexamples/kafka/msgMiddleware/server"
@@ -17,12 +18,17 @@ var (
 			{Name: "tes2", Partitions: 2},
 			{Name: "tes2", Partitions: 3},
 		},
-		KafkaConsumerGroupId: "test-consumer-group",
+
+		//KafkaConsumerGroupId: "test-consumer-group",
+		ConsumerGroupList: []model.ConsumerGroupInfo{
+			{Topic: []string{"tes2"}, GroupId: "test-consumer-group1", Retries: 3, Timeout: 3},
+			{Topic: []string{"tes2"}, GroupId: "test-consumer-group2", Retries: 3, Timeout: 3},
+		},
 
 		HttpServerPort:               8090,
 		HttpServerReadTimeout:        5000,
 		HttpServerWriteTimeout:       5000,
-		HttpServerHandlerChannelSize: 100,
+		HttpServerHandlerChannelSize: 500,
 	}
 )
 
@@ -38,11 +44,21 @@ func main() {
 	}
 
 	fmt.Println("start Consumer... ")
-	consumption := kafka.NewConsumption(cfg)
-	err = consumption.CreateConsume()
-	if err != nil {
-		log.Error("consumption error :", err)
-		return
+	//consumption := kafka.NewConsumption(cfg)
+	//err = consumption.CreateConsume()
+	//if err != nil {
+	//	log.Error("consumption error :", err)
+	//	return
+	//}
+
+	kafkaAddr := []string{cfg.KafkaServer}
+	for index, gcInfo := range cfg.ConsumerGroupList {
+		member := kafka.NewConsumptionMember(kafkaAddr, &gcInfo, sarama.OffsetNewest, index)
+		if member == nil {
+			return
+		}
+
+		go member.Start()
 	}
 
 	log.Info("server start...")

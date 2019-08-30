@@ -2,10 +2,8 @@ package kafka
 
 import (
 	"fmt"
-	"os"
-	"strings"
-
 	log "github.com/Sirupsen/logrus"
+	"goexamples/kafka/msgMiddleware/model"
 
 	"github.com/Shopify/sarama"
 	"golang.org/x/net/context"
@@ -16,19 +14,21 @@ type ConsumptionMember struct {
 	Messages chan *sarama.ConsumerMessage
 	Errs     chan error
 	Close    chan bool
-	Name     string
 	Number   int
 }
 
-func NewConsumptionMember(groupID string, topics []string, offset int64, name string, number int) *ConsumptionMember {
+func NewConsumptionMember(kafkaAddr []string,
+	dcInfo *model.ConsumerGroupInfo,
+	offset int64, number int) *ConsumptionMember {
 
 	config := sarama.NewConfig()
+	// sarama.OffsetNewest sarama.OffsetOldest
 	config.Consumer.Offsets.Initial = offset
+	config.Version = sarama.V0_10_2_1
 
-	kafkaBrokers := strings.Split(os.Getenv("KAFKA_BROKERS"), ",")
-	client, err := sarama.NewConsumerGroup(kafkaBrokers, groupID, config)
+	client, err := sarama.NewConsumerGroup(kafkaAddr, dcInfo.GroupId, config)
 	if err != nil {
-		log.Error("error :", err)
+		log.Error("NewConsumerGroup error :", err)
 		return nil
 	}
 
@@ -42,8 +42,7 @@ func NewConsumptionMember(groupID string, topics []string, offset int64, name st
 		Errs:     errsChan,
 		Messages: messagesChan,
 		//Ready:    readyChan,
-		Name:     name,
-		Number:   number,
+		Number: number,
 	}
 
 	go func() {
@@ -60,9 +59,10 @@ func NewConsumptionMember(groupID string, topics []string, offset int64, name st
 	}()
 
 	go func() {
-		err := client.Consume(context.Background(), topics, member)
+		err := client.Consume(context.Background(),
+			dcInfo.Topic, member)
 		if err != nil {
-			log.Debug("error :", err)
+			log.Error("configure consume error :", err)
 			return
 		}
 	}()
@@ -72,7 +72,7 @@ func NewConsumptionMember(groupID string, topics []string, offset int64, name st
 
 func (cm *ConsumptionMember) Setup(session sarama.ConsumerGroupSession) error {
 	//close(cm.Ready)
-	log.Printf("%s consumer member no = %d ready...", cm.Name, cm.Number)
+	log.Printf("consumer member no = %d ready...", cm.Number)
 	return nil
 }
 
@@ -97,9 +97,10 @@ func (cm *ConsumptionMember) Start() {
 		select {
 		case msg := <-cm.Messages:
 			// get message
-				fmt.Println(msg.Topic)
+			fmt.Println("get message : ",
+				msg.Topic, msg.Partition, string(msg.Value))
 		case errs := <-cm.Errs:
-			fmt.Println(errs)
+			fmt.Println("get err : ", errs)
 		}
 	}
 }

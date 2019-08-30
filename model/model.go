@@ -15,12 +15,19 @@ type TopicInfo struct {
 	Partitions int    `json:"partitions"`
 }
 
+type ConsumerGroupInfo struct {
+	Topic   []string `json:"topic"`
+	GroupId string `json:"group_id"`
+	Retries int    `json:"retries"`
+	Timeout int    `json:"timeout"`
+}
+
 type Config struct {
 	// Kafka地址
 	KafkaServer string      `json:"kafka_server"`
-	KafkaTopics []TopicInfo `json:"kafka_topics"` // topic信息
+	KafkaTopics []TopicInfo `json:"kafka_topics"` // topic信息 producer往哪个partition生成
 
-	KafkaConsumerGroupId string `json:"kafka_consumer_group_id"`
+	ConsumerGroupList []ConsumerGroupInfo `json:"consumer_group_list"`
 
 	// HTTP服务配置
 	HttpServerPort               int `json:"http_server_port"`
