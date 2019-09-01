@@ -30,7 +30,7 @@ func (c *Consumption) CreateConsume() error {
 
 	var err error
 
-	if c.client, err = sarama.NewClient([]string{c.cfg.KafkaServer}, nil); err != nil {
+	if c.client, err = sarama.NewClient(c.cfg.KafkaServer, nil); err != nil {
 		return fmt.Errorf("new kafka client error: %s", err)
 	}
 

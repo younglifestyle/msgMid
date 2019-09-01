@@ -26,10 +26,10 @@ type msgContext struct {
 }
 
 type msgRequest struct {
-	Url          string      `json:"url" binding:"required"`
-	Data         interface{} `json:"data" binding:"required"`
-	Topic        string      `json:"topic" binding:"required"`
-	PartitionNum int         `json:"partition_num" binding:"required"`
+	Url          string `json:"url" binding:"required"`
+	Data         string `json:"data" binding:"required"`
+	Topic        string `json:"topic" binding:"required"`
+	PartitionNum int    `json:"partition_num" binding:"required"`
 }
 
 type ServerCfg struct {
@@ -78,7 +78,7 @@ func RunHttpServer(p *kafka.Producer, cfg *model.Config) bool {
 		handleSendMsg(c, handler)
 	})
 	r.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, "")
+		c.JSON(http.StatusOK, "server is ok")
 	})
 
 	s := &http.Server{
@@ -91,7 +91,8 @@ func RunHttpServer(p *kafka.Producer, cfg *model.Config) bool {
 	go s.ListenAndServe()
 
 	//time.Sleep(1 * time.Second)
-	//runFlg := checkRun("http://127.0.0.1" + ":" + strconv.Itoa(handler.c.HttpServerPort))
+	//runFlg := handler.CheckRun("http://127.0.0.1" + ":" +
+	//	strconv.Itoa(handler.c.HttpServerPort))
 	//if !runFlg {
 	//	return false
 	//}

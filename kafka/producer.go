@@ -28,7 +28,7 @@ func CreateProducer(c *model.Config) (*Producer, error) {
 	config.Producer.Timeout = 5 * time.Second
 	config.Producer.Partitioner = sarama.NewManualPartitioner
 
-	producer, err := sarama.NewAsyncProducer([]string{c.KafkaServer}, config)
+	producer, err := sarama.NewAsyncProducer(c.KafkaServer, config)
 	if err != nil {
 		return nil, err
 	}

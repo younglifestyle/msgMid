@@ -2,12 +2,12 @@ package model
 
 // Kafka消息体
 type Message struct {
-	Headers    map[string][]string // 原始http头
-	Url        string              // 发送目标
-	Data       interface{}         // 发送数据
-	Topic      string              // 消息所处的Topic
-	Partition  int                 // 消息所处的分区ID
-	CreateTime int                 // 消息创建的时间
+	Headers    map[string][]string `json:"headers"`     // 原始http头
+	Url        string              `json:"url"`         // 发送目标
+	Data       string              `json:"data"`        // json数据 发送数据
+	Topic      string              `json:"topic"`       // 消息所处的Topic
+	Partition  int                 `json:"partition"`   // 消息所处的分区ID
+	CreateTime int                 `json:"create_time"` // 消息创建的时间
 }
 
 type TopicInfo struct {
@@ -17,14 +17,14 @@ type TopicInfo struct {
 
 type ConsumerGroupInfo struct {
 	Topic   []string `json:"topic"`
-	GroupId string `json:"group_id"`
-	Retries int    `json:"retries"`
-	Timeout int    `json:"timeout"`
+	GroupId string   `json:"group_id"`
+	Retries int      `json:"retries"`
+	Timeout int      `json:"timeout"`
 }
 
 type Config struct {
 	// Kafka地址
-	KafkaServer string      `json:"kafka_server"`
+	KafkaServer []string    `json:"kafka_server"`
 	KafkaTopics []TopicInfo `json:"kafka_topics"` // topic信息 producer往哪个partition生成
 
 	ConsumerGroupList []ConsumerGroupInfo `json:"consumer_group_list"`
